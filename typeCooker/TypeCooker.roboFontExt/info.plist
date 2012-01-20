@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>addToMenu</key>
+	<array>
+		<dict>
+			<key>path</key>
+			<string>app.py</string>
+			<key>preferredName</key>
+			<string>Type Cooker</string>
+			<key>shortKey</key>
+			<string>t</string>
+		</dict>
+	</array>
+	<key>developer</key>
+	<string>TypeMedia</string>
+	<key>developerURL</key>
+	<string>http://new.typemedia.org/</string>
+	<key>html</key>
+	<string>index.html/</string>
+	<key>launchAtStartUp</key>
+	<integer>0</integer>
+	<key>mainScript</key>
+	<string></string>
+	<key>name</key>
+	<string>TypeCooker</string>
+	<key>timeStamp</key>
+	<real>1317765247.794101</real>
+	<key>version</key>
+	<string>1.0</string>
+</dict>
+</plist>
