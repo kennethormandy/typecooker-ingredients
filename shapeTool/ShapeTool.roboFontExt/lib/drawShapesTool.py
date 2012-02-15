@@ -3,7 +3,6 @@ from AppKit import *
 import os
 
 from lib.tools.drawing import strokePixelPath
-from lib.tools.defaults import getDefault
 
 from dialogKit import ModalDialog, TextBox, EditText, PopUpButton
 from vanilla import RadioGroup
@@ -72,7 +71,10 @@ class GeometricShapesWindow(object):
     def cancelCallback(self, sender):
         ## do nothing :)
         pass
-        
+
+def _roundPoint(x, y):
+    return int(round(x)), int(round(y))
+     
 class DrawGeometricShapesTool(BaseEventTool):
 
     def setup(self):
@@ -104,9 +106,7 @@ class DrawGeometricShapesTool(BaseEventTool):
     def drawShapeWithRectInGlyph(self, shape, rect, glyph):
         ## draw the shape into the glyph
         ## tell the glyph something is going to happen (undo is going to be prepared)
-        
-        preferedSegmentType = getDefault("drawingSegmentType", "curve")
-        
+
         glyph.prepareUndo("Drawing Shapes")
         ## get the pen to draw with
         pen = glyph.getPen()
@@ -115,10 +115,10 @@ class DrawGeometricShapesTool(BaseEventTool):
         
         ## draw with the pen a rect in the glyph
         if shape == "rect":
-            pen.moveTo((x, y))
-            pen.lineTo((x + w, y))
-            pen.lineTo((x + w, y + h))
-            pen.lineTo((x, y + h))
+            pen.moveTo(_roundPoint(x, y))
+            pen.lineTo(_roundPoint(x + w, y))
+            pen.lineTo(_roundPoint(x + w, y + h))
+            pen.lineTo(_roundPoint(x, y + h))
             pen.closePath()
         
         ## draw with the pen an oval inthe glyph
@@ -129,31 +129,31 @@ class DrawGeometricShapesTool(BaseEventTool):
             
             r = .55
             penMethod = pen.curveTo
-            if preferedSegmentType == "qcurve":
+            if glyph.preferedSegmentType == "qcurve":
                 r = .42
                 penMethod = pen.qCurveTo
             
             
-            pen.moveTo((x + hw, y))
+            pen.moveTo(_roundPoint(x + hw, y))
 
-            penMethod((x + hw + hw*r, y), 
-                        (x + w, y + hh - hh*r), 
-                        (x + w, y + hh))
+            penMethod(_roundPoint(x + hw + hw*r, y), 
+                        _roundPoint(x + w, y + hh - hh*r), 
+                        _roundPoint(x + w, y + hh))
 
-            penMethod((x + w, y + hh + hh*r), 
-                        (x + hw + hw*r, y + h), 
-                        (x + hw, y + h))
+            penMethod(_roundPoint(x + w, y + hh + hh*r), 
+                        _roundPoint(x + hw + hw*r, y + h), 
+                        _roundPoint(x + hw, y + h))
 
-            penMethod((x + hw - hw*r, y + h), 
-                        (x, y + hh + hh*r), 
-                        (x, y + hh))
+            penMethod(_roundPoint(x + hw - hw*r, y + h), 
+                        _roundPoint(x, y + hh + hh*r), 
+                        _roundPoint(x, y + hh))
 
-            penMethod((x, y + hh - hh*r), 
-                        (x + hw - hw*r, y), 
-                        (x + hw, y))
+            penMethod(_roundPoint(x, y + hh - hh*r), 
+                        _roundPoint(x + hw - hw*r, y), 
+                        _roundPoint(x + hw, y))
 
             pen.closePath()
-        ## tell the glyph you are done with your actions so it can handle the undo properly   
+        ## tell the glyph you are done with your actions so it can handle the undo properly
         glyph.performUndo()
     
     def mouseDown(self, point, offset):
