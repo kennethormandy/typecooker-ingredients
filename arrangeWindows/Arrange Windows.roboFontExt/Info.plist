@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>addToMenu</key>
+	<array>
+		<dict>
+			<key>path</key>
+			<string>cascade.py</string>
+			<key>preferredName</key>
+			<string>cascade</string>
+			<key>shortKey</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>path</key>
+			<string>tile.py</string>
+			<key>preferredName</key>
+			<string>tile</string>
+			<key>shortKey</key>
+			<string></string>
+		</dict>
+	</array>
+	<key>developer</key>
+	<string>TypeMyType</string>
+	<key>developerURL</key>
+	<string>http://www.typemytype.com</string>
+	<key>html</key>
+	<true/>
+	<key>launchAtStartUp</key>
+	<integer>0</integer>
+	<key>mainScript</key>
+	<string></string>
+	<key>name</key>
+	<string>Arrange Windows</string>
+	<key>timeStamp</key>
+	<real>1318333318.2140119</real>
+	<key>version</key>
+	<string>1.0</string>
+</dict>
+</plist>
