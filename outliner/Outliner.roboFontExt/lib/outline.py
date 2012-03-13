@@ -4,6 +4,8 @@ from defconAppKit.windows.baseWindow import BaseWindowController
 
 from fontTools.pens.cocoaPen import CocoaPen
 
+from lib.tools.bezierTools import curveConverter
+
 from mojo.glyphPreview import GlyphPreview
 from mojo.events import addObserver, removeObserver
 from mojo.UI import UpdateCurrentGlyphView
@@ -819,12 +821,24 @@ class OutlinerPalette(BaseWindowController):
     
     def expand(self, sender):
         glyph = CurrentGlyph()
+        
+        defconGlyph = glyph.naked()
+        
         glyph.prepareUndo("Outline")
+        
+        isQuad = curveConverter.isQuadratic(defconGlyph)
+        
+        if isQuad:
+            curveConverter.quadratic2bezier(defconGlyph)
         
         outline = self.calculate(glyph)
         
         glyph.clear()
         outline.drawPoints(glyph.getPointPen())
+        
+        if isQuad:
+            curveConverter.bezier2quadratic(defconGlyph)
+        
         glyph.round()
         glyph.performUndo()
         
