@@ -37,7 +37,7 @@ class TinyDrawBotDrawingTools(DrawingTools):
         self.lineTo((x, y))
     
     def curveto(self, x1, y1, x2, y2, x3, y3):
-        self.curveTo(((x1, y1), (x2, y2), (x3, y3)))
+        self.curveTo((x1, y1), (x2, y2), (x3, y3))
     
     def closepath(self):
         self.closePath()
