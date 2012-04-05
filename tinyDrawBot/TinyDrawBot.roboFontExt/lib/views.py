@@ -27,6 +27,10 @@ class TinyDrawBotDrawingTools(DrawingTools):
     sub class of drawing tools so code writtin in DrawBot will work.
     """
     
+    def __init__(self):
+        super(TinyDrawBotDrawingTools, self).__init__()
+        self._savePDFPath = None
+    
     def newpath(self):
         self.newPath()
     
@@ -60,6 +64,9 @@ class TinyDrawBotDrawingTools(DrawingTools):
     def fontsize(self, value):
         self.fontSize(value)
     
+    def savePDF(self, path):
+        self._savePDFPath = path
+    
     
 class DrawView(NSView):
     def __new__(cls, *arg, **kwargs):
@@ -78,6 +85,7 @@ class DrawView(NSView):
         
         self._namespaces = dict()
         self._drawingTools = TinyDrawBotDrawingTools()
+        
         for name in self._drawingTools.__all__:
             self._namespaces[name] = getattr(self._drawingTools, name)
     
@@ -86,6 +94,7 @@ class DrawView(NSView):
         self._runRaw = runRaw
         self._pdfImage = None
         self.createPDFdata()
+        self.savePDF_(self._drawingTools._savePDFPath)
             
     def runCode(self):
         self._errorView.set("")
@@ -97,7 +106,6 @@ class DrawView(NSView):
         self.stderr = SimpleOutput(self.output, True)
         ScriptRunner(text=self._code, path=self.path, stdout=self.stdout, stderr=self.stderr, namespace=self._namespaces)
         
-        #self._errorView.set("")
         _st = NSMutableAttributedString.alloc().init()
         for isErr, data in self.output:
             attrs = OUTPUT_TEXT 
@@ -108,8 +116,6 @@ class DrawView(NSView):
         
         
     def createPDFdata(self):
-        size = self.frame()[1]
-        #self._pdfData = self.dataWithPDFInsideRect_(((0, 0), size))
         self._pdfImage = NSPDFImageRep.imageRepWithData_(self._pdfData)
         
     def refresh(self):
@@ -187,6 +193,10 @@ class DrawView(NSView):
         im.unlockFocus()
         return im.TIFFRepresentation()
     _tiffData = property(_get_tiffData)
+
+    def savePDF_(self, path):
+        if path is not None:
+            self._pdfData.writeToFile_atomically_(path , False)
     
 class TinyDrawBotPyDETextView(PyDETextView):
     

@@ -169,7 +169,7 @@ class TinyDrawBot(BaseWindowController):
         self.editor.newScript()
     
     def _savePDF(self, path):
-        self.drawView._pdfData.writeToFile_atomically_(path , False)
+        self.drawView.savePDF_(path)
     
     def toolbarSavePDF(self, sender):
         self.showPutFile(["pdf"], self._savePDF)
