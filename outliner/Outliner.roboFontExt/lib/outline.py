@@ -214,14 +214,14 @@ class OutlinePen(BasePen):
     pointClass = MathPoint
     magicCurve = 0.5522847498
     
-    def __init__(self, glyphSet, offset=10, connection="square", cap="round", mitterLimit=None, closeOpenPaths=True):
+    def __init__(self, glyphSet, offset=10, connection="square", cap="round", miterLimit=None, closeOpenPaths=True):
         BasePen.__init__(self, glyphSet)
         
         self.offset = abs(offset)
-        self._inputMitterLimit = mitterLimit
-        if mitterLimit is None:
-            mitterLimit = self.offset
-        self.mitterLimit = abs(mitterLimit)
+        self._inputmiterLimit = miterLimit
+        if miterLimit is None:
+            miterLimit = self.offset
+        self.miterLimit = abs(miterLimit)
         
         self.closeOpenPaths = closeOpenPaths
         
@@ -450,13 +450,13 @@ class OutlinePen(BasePen):
         angle_1 = radians(degrees(self.prevAngle)+90)
         angle_2 = radians(degrees(self.currentAngle)+90)
             
-        tempFirst = first - self.pointClass(cos(angle_1), sin(angle_1)) * self.mitterLimit
-        tempLast = last + self.pointClass(cos(angle_2), sin(angle_2)) * self.mitterLimit
+        tempFirst = first - self.pointClass(cos(angle_1), sin(angle_1)) * self.miterLimit
+        tempLast = last + self.pointClass(cos(angle_2), sin(angle_2)) * self.miterLimit
         
         newPoint = interSect((first, tempFirst), (last, tempLast))
         if newPoint is not None:
 
-            if self._inputMitterLimit is not None and roundFloat(newPoint.distance(first)) > self._inputMitterLimit:
+            if self._inputmiterLimit is not None and roundFloat(newPoint.distance(first)) > self._inputmiterLimit:
                 pen.lineTo(tempFirst)
                 pen.lineTo(tempLast)
             else:
@@ -469,8 +469,8 @@ class OutlinePen(BasePen):
         angle_1 = radians(degrees(self.prevAngle)+90)
         angle_2 = radians(degrees(self.currentAngle)+90)
 
-        tempFirst = first - self.pointClass(cos(angle_1), sin(angle_1)) * self.mitterLimit
-        tempLast = last + self.pointClass(cos(angle_2), sin(angle_2)) * self.mitterLimit
+        tempFirst = first - self.pointClass(cos(angle_1), sin(angle_1)) * self.miterLimit
+        tempLast = last + self.pointClass(cos(angle_2), sin(angle_2)) * self.miterLimit
         
         newPoint = interSect((first, tempFirst), (last, tempLast))
         if newPoint is None:
@@ -478,8 +478,8 @@ class OutlinePen(BasePen):
             return
         distance = newPoint.distance(first) 
         
-        if roundFloat(distance) > self.mitterLimit:
-            distance = self.mitterLimit + tempFirst.distance(tempLast) * .7
+        if roundFloat(distance) > self.miterLimit:
+            distance = self.miterLimit + tempFirst.distance(tempLast) * .7
             
         distance *= self.magicCurve
 
@@ -615,27 +615,27 @@ class OutlinerPalette(BaseWindowController):
         
         y += 33
         
-        self.w._mitterLimit = TextBox((0, y-3, textMiddle, 17), 'Mitterlimit:', alignment="right")
+        self.w._miterLimit = TextBox((0, y-3, textMiddle, 17), 'MiterLimit:', alignment="right")
         
-        connectMitterLimitValue = getExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "connectMitterLimit"), True)
+        connectmiterLimitValue = getExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "connectmiterLimit"), True)
         
-        self.w.connectMitterLimit = CheckBox((middle-22, y-3, 20, 17), "", 
-                                             callback=self.connectMitterLimit, 
-                                             value=connectMitterLimitValue)
+        self.w.connectmiterLimit = CheckBox((middle-22, y-3, 20, 17), "", 
+                                             callback=self.connectmiterLimit, 
+                                             value=connectmiterLimitValue)
         
-        mitterLimitValue = getExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "mitterLimit"), 10)
+        miterLimitValue = getExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "miterLimit"), 10)
         
-        self.w.mitterLimit = Slider((middle, y, -50, 15), 
+        self.w.miterLimit = Slider((middle, y, -50, 15), 
                                     minValue=1, 
                                     maxValue=200, 
                                     callback=self.parametersChanged, 
-                                    value=mitterLimitValue)
-        self.w.mitterLimitText = EditText((-40, y, -10, 17), mitterLimitValue, 
+                                    value=miterLimitValue)
+        self.w.miterLimitText = EditText((-40, y, -10, 17), miterLimitValue, 
                                           callback=self.parametersTextChanged, 
                                           sizeStyle="small")
         
-        self.w.mitterLimit.enable(not connectMitterLimitValue)
-        self.w.mitterLimitText.enable(not connectMitterLimitValue)
+        self.w.miterLimit.enable(not connectmiterLimitValue)
+        self.w.miterLimitText.enable(not connectmiterLimitValue)
         
         y += 30
         
@@ -722,10 +722,10 @@ class OutlinerPalette(BaseWindowController):
     
     def calculate(self, glyph):
         tickness = self.w.tickness.get()
-        if self.w.connectMitterLimit.get():
-            mitterLimit = None
+        if self.w.connectmiterLimit.get():
+            miterLimit = None
         else:
-            mitterLimit = self.w.mitterLimit.get()
+            miterLimit = self.w.miterLimit.get()
         
         corner = self.w.corner.getItems()[self.w.corner.get()]
         cap = self.w.cap.getItems()[self.w.cap.get()]
@@ -740,7 +740,7 @@ class OutlinerPalette(BaseWindowController):
                             tickness, 
                             connection=corner, 
                             cap=cap,
-                            mitterLimit=mitterLimit,
+                            miterLimit=miterLimit,
                             closeOpenPaths=closeOpenPaths)
         
         glyph.draw(pen)
@@ -750,11 +750,11 @@ class OutlinerPalette(BaseWindowController):
                          drawOuter=drawOuter)
         return pen
     
-    def connectMitterLimit(self, sender):
-        setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "connectMitterLimit"), sender.get())
+    def connectmiterLimit(self, sender):
+        setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "connectmiterLimit"), sender.get())
         value = not sender.get()
-        self.w.mitterLimit.enable(value)
-        self.w.mitterLimitText.enable(value)
+        self.w.miterLimit.enable(value)
+        self.w.miterLimitText.enable(value)
         self.parametersChanged(sender)
     
     def useCapCallback(self, sender):
@@ -779,11 +779,11 @@ class OutlinerPalette(BaseWindowController):
     def parametersChanged(self, sender=None, glyph=None):
         tickness = int(self.w.tickness.get())
         setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "thickness"), tickness)
-        mitterLimit = int(self.w.mitterLimit.get())
-        if self.w.connectMitterLimit.get():
-            mitterLimit = tickness
-            self.w.mitterLimit.set(mitterLimit)
-        setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "mitterLimit"), mitterLimit)
+        miterLimit = int(self.w.miterLimit.get())
+        if self.w.connectmiterLimit.get():
+            miterLimit = tickness
+            self.w.miterLimit.set(miterLimit)
+        setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "miterLimit"), miterLimit)
         
         corner = self.w.corner.getItems()[self.w.corner.get()]
         setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "corner"), corner )
@@ -801,7 +801,7 @@ class OutlinerPalette(BaseWindowController):
         setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "addRight"), drawOuter)
         
         self.w.ticknessText.set("%i" %tickness)
-        self.w.mitterLimitText.set("%i" %mitterLimit)
+        self.w.miterLimitText.set("%i" %miterLimit)
         self.updateView()
     
     def colorCallback(self, sender):
