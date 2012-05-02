@@ -64,8 +64,11 @@ class GridSettingsMenu(object):
         try:
             value = int(value)
         except:
+            value = -1
+            
+        if value <= 0:
             value = self.tool.size
-            sender.set(value)
+            sender.set(value)    
             return
         
         self.tool.size = value
