@@ -43,7 +43,7 @@ class RamsaySts(object):
                     return
     
     def drawPreviewNeighBors(self, info):
-        fillColor = getDefaultColor("glyphViewFillColor")
+        fillColor = NSColor.blackColor()
         fillColor.set()
         self._drawNeightborsGlyphs(info["glyph"], stroke=False)
         
