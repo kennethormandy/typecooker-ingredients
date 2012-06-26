@@ -1,11 +1,20 @@
 from AppKit import *
+import re
+
 from lib.scripting.PyDETextView import PyDETextView,OUTPUT_TEXT, ERROR_TEXT
 from lib.scripting.scriptTools import ScriptRunner
 from lib.scripting.scriptingWindow import PyTextEditor
 
 from lib.scripting.cocoaDrawingTools import DrawingTools
 import warnings
+
 epsPasteBoardType = "CorePasteboardFlavorType 0x41494342"
+
+variableRE = r".*^%s\s?=\s?([0-9]+)\s?$"
+
+height_RE = re.compile(variableRE % "HEIGHT", re.MULTILINE + re.DOTALL)
+width_RE = re.compile(variableRE % "WIDTH", re.MULTILINE + re.DOTALL)
+
 
 class SimpleOutput(object):
     def __init__(self, dataList, isErr=False):
@@ -46,8 +55,8 @@ class TinyDrawBotDrawingTools(DrawingTools):
     def closepath(self):
         self.closePath()
     
-    def drawpath(self):
-        self.drawPath()
+    def drawpath(self, path=None):
+        self.drawPath(path)
         
     def strokewidth(self, value):
         self.strokeWidth(value)
@@ -67,6 +76,11 @@ class TinyDrawBotDrawingTools(DrawingTools):
     def savePDF(self, path):
         self._savePDFPath = path
     
+    def drawGlyph(self, glyph):
+        from fontTools.pens.cocoaPen import CocoaPen
+        pen = CocoaPen(glyph.getParent())
+        glyph.draw(pen)
+        self.drawPath(pen.path)
     
 class DrawView(NSView):
     def __new__(cls, *arg, **kwargs):
@@ -85,12 +99,25 @@ class DrawView(NSView):
         
         self._namespaces = dict()
         self._drawingTools = TinyDrawBotDrawingTools()
-        
+
         for name in self._drawingTools.__all__:
             self._namespaces[name] = getattr(self._drawingTools, name)
     
     def setCode(self, code, runRaw=False):
+        height, width = self.frame()[1]
+        heightMath = height_RE.match(code)
+        if heightMath:
+            height = int(heightMath.group(1))
+        
+        widthMath = width_RE.match(code)
+        if widthMath:
+            width = int(widthMath.group(1))
+        
+        code = "WIDTH = %s\nHEIGHT = %s\n" %(width, height) + code
+        
+        self.setFrame_(NSMakeRect(0, 0, width, height))
         self._code = code
+        
         self._runRaw = runRaw
         self._pdfImage = None
         self.createPDFdata()
