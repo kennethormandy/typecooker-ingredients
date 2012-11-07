@@ -15,6 +15,8 @@ variableRE = r".*^%s\s?=\s?([0-9]+)\s?$"
 height_RE = re.compile(variableRE % "HEIGHT", re.MULTILINE + re.DOTALL)
 width_RE = re.compile(variableRE % "WIDTH", re.MULTILINE + re.DOTALL)
 
+size_RE = re.compile(r".*^size\s?\(\s?([0-9]+),\s?([0-9]+)\s?\)\s?$", 
+                    re.MULTILINE + re.DOTALL)
 
 class SimpleOutput(object):
     def __init__(self, dataList, isErr=False):
@@ -40,47 +42,10 @@ class TinyDrawBotDrawingTools(DrawingTools):
         super(TinyDrawBotDrawingTools, self).__init__()
         self._savePDFPath = None
     
-    def newpath(self):
-        self.newPath()
-    
-    def moveto(self, x, y):
-        self.moveTo((x, y))
-    
-    def lineto(self, x, y):
-        self.lineTo((x, y))
-    
-    def curveto(self, x1, y1, x2, y2, x3, y3):
-        self.curveTo((x1, y1), (x2, y2), (x3, y3))
-    
-    def closepath(self):
-        self.closePath()
-    
-    def drawpath(self, path=None):
-        self.drawPath(path)
-        
-    def strokewidth(self, value):
-        self.strokeWidth(value)
-    
-    def mitterlimit(self, value):
-        self.mitterLimit(value)
-    
-    def linejoin(self, value):
-        self.lineJoin(value)
-    
-    def dashline(self, *args):
-        self.dashLine(*args)
-    
-    def fontsize(self, value):
-        self.fontSize(value)
-    
-    def savePDF(self, path):
-        self._savePDFPath = path
-    
-    def drawGlyph(self, glyph):
-        from fontTools.pens.cocoaPen import CocoaPen
-        pen = CocoaPen(glyph.getParent())
-        glyph.draw(pen)
-        self.drawPath(pen.path)
+    def saveImage(self, path):
+        self._savePDFPath = path  
+
+    saveimage = saveImage
     
 class DrawView(NSView):
     def __new__(cls, *arg, **kwargs):
@@ -93,7 +58,6 @@ class DrawView(NSView):
         self._errorView = errorView
         self._code = ""
         self._runRaw = False
-        self.path = None
         self._pdfImage = None
         self._startDrag = False
         
@@ -103,6 +67,18 @@ class DrawView(NSView):
         for name in self._drawingTools.__all__:
             self._namespaces[name] = getattr(self._drawingTools, name)
     
+    def getPath(self):
+        window = self.window()
+        if window is None:
+            return None
+        document = window.document()
+        if document is None:
+            return None
+        url = document.fileURL()
+        if url is None:
+            return None
+        return url.path()
+
     def setCode(self, code, runRaw=False):
         height, width = self.frame()[1]
         heightMath = height_RE.match(code)
@@ -131,7 +107,8 @@ class DrawView(NSView):
         self.output = []
         self.stdout = SimpleOutput(self.output)
         self.stderr = SimpleOutput(self.output, True)
-        ScriptRunner(text=self._code, path=self.path, stdout=self.stdout, stderr=self.stderr, namespace=self._namespaces)
+        path = self.getPath()
+        ScriptRunner(text=self._code, path=path, stdout=self.stdout, stderr=self.stderr, namespace=self._namespaces)
         
         _st = NSMutableAttributedString.alloc().init()
         for isErr, data in self.output:
