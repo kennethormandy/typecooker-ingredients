@@ -7,15 +7,18 @@ from lib.tools.drawing import strokePixelPath
 from dialogKit import ModalDialog, TextBox, EditText, PopUpButton
 from vanilla import RadioGroup
 
+from mojo.extensions import ExtensionBundle
+
+
 ## collecting the image data for building cursors and toolbar icons
-dirname = os.path.dirname(__file__)
-_ovalImage = NSImage.alloc().initByReferencingFile_(os.path.join(dirname, "cursorOval.png"))
-_cursorOval = NSCursor.alloc().initWithImage_hotSpot_(_ovalImage, (6, 6))
 
-_rectImage = NSImage.alloc().initByReferencingFile_(os.path.join(dirname, "cursorRect.png"))
-_cursorRect = NSCursor.alloc().initWithImage_hotSpot_(_rectImage, (6, 6))
+shapeBundle = ExtensionBundle("ShapeTool")
+_cursorOval = CreateCursor(shapeBundle.get("cursorOval"), hotSpot=(6, 6))
 
-toolbarIcon = NSImage.alloc().initByReferencingFile_(os.path.join(dirname, "toolbarIcon.png"))
+_cursorRect = CreateCursor(shapeBundle.get("cursorRect"), hotSpot=(6, 6))
+
+toolbarIcon = shapeBundle.get("toolbarIcon")
+
 
 class GeometricShapesWindow(object):
     """
