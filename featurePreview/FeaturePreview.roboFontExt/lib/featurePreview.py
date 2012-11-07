@@ -106,6 +106,10 @@ class FeatureTester(BaseWindowController):
         # compile
         path = tempfile.mkstemp()[1]
         compiler = EmptyOTFCompiler()
+        ## clean up
+        if self.font.info.openTypeOS2WinDescent is not None and self.font.info.openTypeOS2WinDescent < 0:
+            self.font.info.openTypeOS2WinDescent = abs(self.font.info.openTypeOS2WinDescent)
+        self.font.info.postscriptNominalWidthX = None
         reports = compiler.compile(self.font, path)
         # load the compiled font
         if os.path.exists(path) and reports["makeotf"] is not None and "makeotfexe [FATAL]" not in reports["makeotf"]:
