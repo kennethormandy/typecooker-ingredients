@@ -1,16 +1,18 @@
 ## cascade windows
 from AppKit import *
 
-windows = [w for w in NSApp().orderedWindows() if w.isVisible()]
+def cascade():
 
-screen = NSScreen.mainScreen()
-(x, y), (w, h) = screen.visibleFrame()
+    windows = [w for w in NSApp().orderedWindows() if w.isVisible()]
 
-altDown = NSEvent.modifierFlags() & NSAlternateKeyMask
+    screen = NSScreen.mainScreen()
+    (x, y), (w, h) = screen.visibleFrame()
 
-NSApp().arrangeInFront_(None)
+    altDown = NSEvent.modifierFlags() & NSAlternateKeyMask
 
-leftTop = (x, y+h)
-for window in reversed(windows):
-    window.setFrameTopLeftPoint_(leftTop)
-    leftTop = window.cascadeTopLeftFromPoint_(leftTop)
+    NSApp().arrangeInFront_(None)
+
+    leftTop = (x, y+h)
+    for window in reversed(windows):
+        window.setFrameTopLeftPoint_(leftTop)
+        leftTop = window.cascadeTopLeftFromPoint_(leftTop)

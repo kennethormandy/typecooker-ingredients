@@ -2,63 +2,66 @@
 
 from AppKit import *
 
-windows = [w for w in NSApp().orderedWindows() if w.isVisible()]
 
-screen = NSScreen.mainScreen()
-(x, y), (w, h) = screen.visibleFrame()
+def tile():
 
-altDown = NSEvent.modifierFlags() & NSAlternateKeyMask
+    windows = [w for w in NSApp().orderedWindows() if w.isVisible()]
 
-NSApp().arrangeInFront_(None)
+    screen = NSScreen.mainScreen()
+    (x, y), (w, h) = screen.visibleFrame()
 
-prefWindow = None
-for window in windows:
-    if hasattr(window, "windowName") and window.windowName() == "PreferencesWindow":
-        prefWindow = window
-        break
+    altDown = NSEvent.modifierFlags() & NSAlternateKeyMask
 
-if prefWindow is not None:
-    windows.remove(prefWindow)
+    NSApp().arrangeInFront_(None)
 
-scriptingWindow = None
-for window in windows:
-    if hasattr(window, "windowName") and window.windowName() == "ScriptingWindow":
-        scriptingWindow = window
-        break
+    prefWindow = None
+    for window in windows:
+        if hasattr(window, "windowName") and window.windowName() == "PreferencesWindow":
+            prefWindow = window
+            break
 
-if scriptingWindow is not None:
-    scriptinWindowWidth = w/5.
-    w -= scriptinWindowWidth
-    scriptingWindow.setFrame_display_animate_(NSMakeRect(x+w, y, scriptinWindowWidth, h), True,  altDown)
-    windows.remove(scriptingWindow)
+    if prefWindow is not None:
+        windows.remove(prefWindow)
 
-tileInfo = {
-            1 : [[1]],
-            2 : [[1], [1]],
-            3 : [[1], [1, 1]],
-            4 : [[1, 1], [1, 1]],
-            5 : [[1, 1], [1, 1, 1]],
-            }
+    scriptingWindow = None
+    for window in windows:
+        if hasattr(window, "windowName") and window.windowName() == "ScriptingWindow":
+            scriptingWindow = window
+            break
 
-windowsToTile = windows[:5]
-windowsToHide = windows[5:]
+    if scriptingWindow is not None:
+        scriptinWindowWidth = w/5.
+        w -= scriptinWindowWidth
+        scriptingWindow.setFrame_display_animate_(NSMakeRect(x+w, y, scriptinWindowWidth, h), True,  altDown)
+        windows.remove(scriptingWindow)
 
-if windowsToTile:
-    arrangement = tileInfo[len(windowsToTile)]
-    maxHeight = len(arrangement)
-    diffx = x
-    diffy = y
-    c = 0
-    for i in arrangement:
-        maxWidth = len(i)        
-        for j in i:
-            window = windows[c]
-            window.setFrame_display_animate_(NSMakeRect(diffx, diffy, w/float(maxWidth), h/float(maxHeight)), True, altDown)
-            c += 1
-        
-            diffx += w/float(maxWidth)
+    tileInfo = {
+                1 : [[1]],
+                2 : [[1], [1]],
+                3 : [[1], [1, 1]],
+                4 : [[1, 1], [1, 1]],
+                5 : [[1, 1], [1, 1, 1]],
+                }
+
+    windowsToTile = windows[:5]
+    windowsToHide = windows[5:]
+
+    if windowsToTile:
+        arrangement = tileInfo[len(windowsToTile)]
+        maxHeight = len(arrangement)
         diffx = x
-        diffy += h/float(maxHeight)
+        diffy = y
+        c = 0
+        for i in arrangement:
+            maxWidth = len(i)        
+            for j in i:
+                window = windows[c]
+                window.setFrame_display_animate_(NSMakeRect(diffx, diffy, w/float(maxWidth), h/float(maxHeight)), True, altDown)
+                c += 1
+            
+                diffx += w/float(maxWidth)
+            diffx = x
+            diffy += h/float(maxHeight)
 
-for window in windowsToHide:
-    window.miniaturize_(None)
+    for window in windowsToHide:
+        window.miniaturize_(None)

@@ -3,24 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>addToMenu</key>
-	<array>
-		<dict>
-			<key>path</key>
-			<string>cascade.py</string>
-			<key>preferredName</key>
-			<string>cascade</string>
-			<key>shortKey</key>
-			<string></string>
-		</dict>
-		<dict>
-			<key>path</key>
-			<string>tile.py</string>
-			<key>preferredName</key>
-			<string>tile</string>
-			<key>shortKey</key>
-			<string></string>
-		</dict>
-	</array>
+	<array/>
 	<key>developer</key>
 	<string>TypeMyType</string>
 	<key>developerURL</key>
@@ -28,14 +11,18 @@
 	<key>html</key>
 	<true/>
 	<key>launchAtStartUp</key>
-	<integer>0</integer>
+	<integer>1</integer>
 	<key>mainScript</key>
-	<string></string>
+	<string>install.py</string>
 	<key>name</key>
 	<string>Arrange Windows</string>
+	<key>requiresVersionMajor</key>
+	<string>1</string>
+	<key>requiresVersionMinor</key>
+	<string>3</string>
 	<key>timeStamp</key>
-	<real>1318333318.2140119</real>
+	<real>1351798925.8295441</real>
 	<key>version</key>
-	<string>1.0</string>
+	<string>1.1</string>
 </dict>
 </plist>
