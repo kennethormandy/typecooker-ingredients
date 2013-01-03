@@ -41,6 +41,7 @@ class TinyDrawBot(BaseWindowController):
         
         self.editor = TinyDrawBotTextEditor((0, 0, -0, -0))
         self.codeOutPut = TextEditor((0, 0, -0, -0))
+        self.editor.setOutputView_(self.codeOutPut)
         
         self.drawView = DrawView(self.codeOutPut)
         self.drawScrollView = ScrollView((0, 0, -0, -0), self.drawView)
