@@ -7,6 +7,8 @@ from lib.tools.drawing import strokePixelPath
 from dialogKit import ModalDialog, TextBox, EditText, PopUpButton
 from vanilla import RadioGroup
 
+from robofab.pens.reverseContourPointPen import ReverseContourPointPen
+
 from mojo.extensions import ExtensionBundle
 
 
@@ -66,7 +68,7 @@ class GeometricShapesWindow(object):
             h = int(self.w.hInput.get())
         ## if this fails just do nothing and print a tiny traceback
         except:
-            print "Input wan't a number!" 
+            print "A number is required!" 
             return
         ## draw the shape with the callback given on init
         self.callback(shape, (x, y, w, h), self.glyph)
@@ -109,20 +111,23 @@ class DrawGeometricShapesTool(BaseEventTool):
     def drawShapeWithRectInGlyph(self, shape, rect, glyph):
         ## draw the shape into the glyph
         ## tell the glyph something is going to happen (undo is going to be prepared)
-
         glyph.prepareUndo("Drawing Shapes")
+
         ## get the pen to draw with
-        pen = glyph.getPen()
+        pen = glyph.getPointPen()
+        if glyph.preferedSegmentType == "qcurve":
+            pen = ReverseContourPointPen(pen)
         
         x, y, w, h = rect
         
         ## draw with the pen a rect in the glyph
         if shape == "rect":
-            pen.moveTo(_roundPoint(x, y))
-            pen.lineTo(_roundPoint(x + w, y))
-            pen.lineTo(_roundPoint(x + w, y + h))
-            pen.lineTo(_roundPoint(x, y + h))
-            pen.closePath()
+            pen.beginPath()
+            pen.addPoint(_roundPoint(x, y), "line")
+            pen.addPoint(_roundPoint(x, y + h), "line")
+            pen.addPoint(_roundPoint(x + w, y + h), "line")
+            pen.addPoint(_roundPoint(x + w, y), "line")
+            pen.endPath()
         
         ## draw with the pen an oval inthe glyph
         elif shape == "oval":
@@ -131,31 +136,29 @@ class DrawGeometricShapesTool(BaseEventTool):
             hh = h/2.
             
             r = .55
-            penMethod = pen.curveTo
+            segmentType = glyph.preferedSegmentType
             if glyph.preferedSegmentType == "qcurve":
                 r = .42
-                penMethod = pen.qCurveTo
             
-            
-            pen.moveTo(_roundPoint(x + hw, y))
+            pen.beginPath()
+            pen.addPoint(_roundPoint(x + hw, y), segmentType)
+            pen.addPoint(_roundPoint(x + hw - hw*r, y))
+            pen.addPoint(_roundPoint(x, y + hh - hh*r))
 
-            penMethod(_roundPoint(x + hw + hw*r, y), 
-                        _roundPoint(x + w, y + hh - hh*r), 
-                        _roundPoint(x + w, y + hh))
+            pen.addPoint(_roundPoint(x, y + hh), segmentType)
+            pen.addPoint(_roundPoint(x, y + hh + hh*r))
+            pen.addPoint(_roundPoint(x + hw - hw*r, y + h))
 
-            penMethod(_roundPoint(x + w, y + hh + hh*r), 
-                        _roundPoint(x + hw + hw*r, y + h), 
-                        _roundPoint(x + hw, y + h))
+            pen.addPoint(_roundPoint(x + hw, y + h), segmentType)
+            pen.addPoint(_roundPoint(x + hw + hw*r, y + h))
+            pen.addPoint(_roundPoint(x + w, y + hh + hh*r))
 
-            penMethod(_roundPoint(x + hw - hw*r, y + h), 
-                        _roundPoint(x, y + hh + hh*r), 
-                        _roundPoint(x, y + hh))
+            pen.addPoint(_roundPoint(x + w, y + hh), segmentType)
+            pen.addPoint(_roundPoint(x + w, y + hh - hh*r))
+            pen.addPoint(_roundPoint(x + hw + hw*r, y))
 
-            penMethod(_roundPoint(x, y + hh - hh*r), 
-                        _roundPoint(x + hw - hw*r, y), 
-                        _roundPoint(x + hw, y))
+            pen.endPath()
 
-            pen.closePath()
         ## tell the glyph you are done with your actions so it can handle the undo properly
         glyph.performUndo()
     
@@ -180,7 +183,8 @@ class DrawGeometricShapesTool(BaseEventTool):
         if self.minPoint and self.maxPoint:
             self.drawShapeWithRectInGlyph(self.shape, self.getRect(), self.getGlyph())
         ## reset the tool
-        self.setup()
+        self.minPoint = None
+        self.maxPoint = None
         
     def modifiersChanged(self):
         ## is been called when the modifiers changed (shift, alt, control, command)
