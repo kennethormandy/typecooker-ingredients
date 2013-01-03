@@ -3,6 +3,8 @@ from math import floor
 import vanilla
 import os
 
+from robofab.pens.reverseContourPointPen import ReverseContourPointPen
+
 from mojo.events import BaseEventTool, installTool
 from mojo.roboFont import CreateCursor
 
@@ -185,15 +187,18 @@ class PixelTool(BaseEventTool):
             x = point.x - w*.5
             y = point.y - h*.5
         
-        pen = glyph.getPen()
+        pen = glyph.getPointPen()
+        if glyph.preferedSegmentType == "qcurve":
+            pen = ReverseContourPointPen(pen)
         
         if self.drawingMode == RECT_MODE:
-    
-            pen.moveTo((x, y))
-            pen.lineTo((x + w, y))
-            pen.lineTo((x + w, y + h))
-            pen.lineTo((x, y + h))
-            pen.closePath()
+            pen.beginPath()
+            pen.addPoint(_roundPoint(x, y), "line")
+            pen.addPoint(_roundPoint(x + w, y), "line")
+            pen.addPoint(_roundPoint(x + w, y + h), "line")
+            pen.addPoint(_roundPoint(x, y + h), "line")
+                    
+            pen.endPath()
         
         elif self.drawingMode == OVAL_MODE:
 
@@ -201,32 +206,28 @@ class PixelTool(BaseEventTool):
             hh = h/2.
 
             r = .55
-            penMethod = pen.curveTo
+            segmentType = glyph.preferedSegmentType
             if glyph.preferedSegmentType == "qcurve":
                 r = .42
-                penMethod = pen.qCurveTo
-            
-            
-            pen.moveTo(_roundPoint(x + hw, y))
 
-            penMethod(_roundPoint(x + hw + hw*r, y), 
-                        _roundPoint(x + w, y + hh - hh*r), 
-                        _roundPoint(x + w, y + hh))
+            pen.beginPath()
+            pen.addPoint(_roundPoint(x + hw, y), segmentType)
+            pen.addPoint(_roundPoint(x + hw + hw*r, y))
+            pen.addPoint(_roundPoint(x + w, y + hh - hh*r))
 
-            penMethod(_roundPoint(x + w, y + hh + hh*r), 
-                        _roundPoint(x + hw + hw*r, y + h), 
-                        _roundPoint(x + hw, y + h))
+            pen.addPoint(_roundPoint(x + w, y + hh), segmentType)
+            pen.addPoint(_roundPoint(x + w, y + hh + hh*r))
+            pen.addPoint(_roundPoint(x + hw + hw*r, y + h))
 
-            penMethod(_roundPoint(x + hw - hw*r, y + h), 
-                        _roundPoint(x, y + hh + hh*r), 
-                        _roundPoint(x, y + hh))
+            pen.addPoint(_roundPoint(x + hw, y + h), segmentType)
+            pen.addPoint(_roundPoint(x + hw - hw*r, y + h))
+            pen.addPoint(_roundPoint(x, y + hh + hh*r))
 
-            penMethod(_roundPoint(x, y + hh - hh*r), 
-                        _roundPoint(x + hw - hw*r, y), 
-                        _roundPoint(x + hw, y))
-            
+            pen.addPoint(_roundPoint(x, y + hh), segmentType)
+            pen.addPoint(_roundPoint(x, y + hh - hh*r))
+            pen.addPoint(_roundPoint(x + hw - hw*r, y))
 
-            pen.closePath()
+            pen.endPath()
         
         elif self.drawingMode == COMPONENT_MODE and self.componentName and self.componentName != glyph.name:
             pen.addComponent(self.componentName, [1, 0, 0, 1, x, y])
