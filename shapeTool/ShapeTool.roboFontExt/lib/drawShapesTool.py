@@ -88,13 +88,15 @@ class DrawGeometricShapesTool(BaseEventTool):
         self.minPoint = None
         self.maxPoint = None
         self.shape = "rect"
-    
+        self.origin = "corner"
+
     def getRect(self):
         ## return the rect between mouse down and mouse up
         x = self.minPoint.x
         y = self.minPoint.y
         w = self.maxPoint.x - self.minPoint.x
         h = self.maxPoint.y - self.minPoint.y
+
         ## handle the shift down and equalize width and height
         if self.shiftDown:
             sign = 1
@@ -106,6 +108,22 @@ class DrawGeometricShapesTool(BaseEventTool):
                 if w < 0:
                     sign = -1
                 w = abs(h) * sign
+
+        if self.origin == "center":
+            ## if the orgin is centered substract the width and height
+            x -= w
+            y -= h
+            w *= 2
+            h *= 2
+
+        ## optimize the retangle, so the width and height are always postive numbers
+        if w < 0:
+            w = abs(w)
+            x -= w
+        if h < 0:
+            h = abs(h)
+            y -= h
+        
         return x, y, w, h
     
     def drawShapeWithRectInGlyph(self, shape, rect, glyph):
@@ -124,12 +142,13 @@ class DrawGeometricShapesTool(BaseEventTool):
         if shape == "rect":
             pen.beginPath()
             pen.addPoint(_roundPoint(x, y), "line")
-            pen.addPoint(_roundPoint(x, y + h), "line")
-            pen.addPoint(_roundPoint(x + w, y + h), "line")
             pen.addPoint(_roundPoint(x + w, y), "line")
+            pen.addPoint(_roundPoint(x + w, y + h), "line")
+            pen.addPoint(_roundPoint(x, y + h), "line")
+
             pen.endPath()
         
-        ## draw with the pen an oval inthe glyph
+        ## draw with the pen an oval in the glyph
         elif shape == "oval":
             
             hw = w/2.
@@ -142,37 +161,36 @@ class DrawGeometricShapesTool(BaseEventTool):
             
             pen.beginPath()
             pen.addPoint(_roundPoint(x + hw, y), segmentType)
-            pen.addPoint(_roundPoint(x + hw - hw*r, y))
-            pen.addPoint(_roundPoint(x, y + hh - hh*r))
-
-            pen.addPoint(_roundPoint(x, y + hh), segmentType)
-            pen.addPoint(_roundPoint(x, y + hh + hh*r))
-            pen.addPoint(_roundPoint(x + hw - hw*r, y + h))
-
-            pen.addPoint(_roundPoint(x + hw, y + h), segmentType)
-            pen.addPoint(_roundPoint(x + hw + hw*r, y + h))
-            pen.addPoint(_roundPoint(x + w, y + hh + hh*r))
+            pen.addPoint(_roundPoint(x + hw + hw*r, y))
+            pen.addPoint(_roundPoint(x + w, y + hh - hh*r))
 
             pen.addPoint(_roundPoint(x + w, y + hh), segmentType)
-            pen.addPoint(_roundPoint(x + w, y + hh - hh*r))
-            pen.addPoint(_roundPoint(x + hw + hw*r, y))
+            pen.addPoint(_roundPoint(x + w, y + hh + hh*r))
+            pen.addPoint(_roundPoint(x + hw + hw*r, y + h))
+
+            pen.addPoint(_roundPoint(x + hw, y + h), segmentType)
+            pen.addPoint(_roundPoint(x + hw - hw*r, y + h))
+            pen.addPoint(_roundPoint(x, y + hh + hh*r))
+
+            pen.addPoint(_roundPoint(x, y + hh), segmentType)
+            pen.addPoint(_roundPoint(x, y + hh - hh*r))
+            pen.addPoint(_roundPoint(x + hw - hw*r, y))
 
             pen.endPath()
 
         ## tell the glyph you are done with your actions so it can handle the undo properly
         glyph.performUndo()
     
-    def mouseDown(self, point, offset):
+    def mouseDown(self, point, clickCount):
         ## a mouse down, only save the mouse down point
         self.minPoint = point
-        ## if command is down pop up an modal dialog with inputs
-        if self.commandDown:
+        ## on double click pop up an modal dialog with inputs
+        if clickCount == 2:
             ## create and open the modal dialog
             GeometricShapesWindow(self.getGlyph(), 
                             callback=self.drawShapeWithRectInGlyph, 
                             x=self.minPoint.x, 
                             y=self.minPoint.y)
-        # getGLyph returns the current glyph as robofab object
 
     def mouseDragged(self, point, delta):
         ## record the draggin point
@@ -189,9 +207,13 @@ class DrawGeometricShapesTool(BaseEventTool):
     def modifiersChanged(self):
         ## is been called when the modifiers changed (shift, alt, control, command)
         self.shape = "rect"
+        self.origin = "corner"
         ## change the shape when option is down
         if self.optionDown:
             self.shape = "oval"
+        ## change the origin when command is down
+        if self.commandDown:
+            self.origin = "center"
         ## refresh the current glyph view
         self.getNSView().refresh()
         
@@ -212,11 +234,23 @@ class DrawGeometricShapesTool(BaseEventTool):
             elif self.shape == "oval":
                 ## create a oval path
                 path = NSBezierPath.bezierPathWithOvalInRect_(rect)
+
+            if self.origin == "center":
+                ## draw a cross hair at the center point
+                crossHairLength = 3 * scale
+                ## get the center of the rectangle
+                centerX = x + w * .5
+                centerY = y + h * .5
+
+                path.moveToPoint_((centerX, centerY - crossHairLength))
+                path.lineToPoint_((centerX, centerY + crossHairLength))
+                path.moveToPoint_((centerX - crossHairLength, centerY))
+                path.lineToPoint_((centerX + crossHairLength, centerY))
+
             ## set the line width
             path.setLineWidth_(scale)
-            ## draw without anit-alias
+            ## draw without anti-alias
             strokePixelPath(path)
-
 
     def getDefaultCursor(self):
         ## returns the cursor
