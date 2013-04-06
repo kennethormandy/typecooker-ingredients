@@ -18,7 +18,7 @@
 	<key>developerURL</key>
 	<string>http://new.typemedia.org/</string>
 	<key>html</key>
-	<string>index.html/</string>
+	<true/>
 	<key>launchAtStartUp</key>
 	<integer>0</integer>
 	<key>mainScript</key>
