@@ -33,5 +33,9 @@
 	<real>1339084427.46032</real>
 	<key>version</key>
 	<string>1.0</string>
+	<key>repository</key>
+	<string>typemytype/RoboFontExtensions</string>
+	<key>extensionPath</key>
+	<string>LayerPreview/LayerPreview.roboFontExt</string>
 </dict>
 </plist>
