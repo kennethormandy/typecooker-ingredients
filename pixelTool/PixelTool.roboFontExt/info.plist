@@ -29,5 +29,9 @@
 	<real>1318946465.962729</real>
 	<key>version</key>
 	<string>1.0</string>
+	<key>repository</key>
+	<string>typemytype/RoboFontExtensions</string>
+	<key>extensionPath</key>
+	<string>pixelTool/PixelTool.roboFontExt</string>
 </dict>
 </plist>

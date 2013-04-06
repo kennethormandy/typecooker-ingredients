@@ -33,5 +33,9 @@
 	<real>1322823760.2236581</real>
 	<key>version</key>
 	<string>1.0</string>
+	<key>repository</key>
+	<string>typemytype/RoboFontExtensions</string>
+	<key>extensionPath</key>
+	<string>tinyDrawBot/TinyDrawBot.roboFontExt</string>
 </dict>
 </plist>

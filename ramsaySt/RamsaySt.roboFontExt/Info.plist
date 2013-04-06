@@ -29,5 +29,9 @@
 	<real>1320233007.075783</real>
 	<key>version</key>
 	<string>1.0</string>
+	<key>repository</key>
+	<string>typemytype/RoboFontExtensions</string>
+	<key>extensionPath</key>
+	<string>ramsaySt/RamsaySt.roboFontExt</string>
 </dict>
 </plist>

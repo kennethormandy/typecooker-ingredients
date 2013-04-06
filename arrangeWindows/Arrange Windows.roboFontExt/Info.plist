@@ -24,5 +24,9 @@
 	<real>1351798925.8295441</real>
 	<key>version</key>
 	<string>1.1</string>
+	<key>repository</key>
+	<string>typemytype/RoboFontExtensions</string>
+	<key>extensionPath</key>
+	<string>arrangeWindows/Arrange Windows.roboFontExt</string>
 </dict>
 </plist>

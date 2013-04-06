@@ -33,5 +33,9 @@
 	<real>1324844494.6654279</real>
 	<key>version</key>
 	<string>1.0</string>
+	<key>repository</key>
+	<string>typemytype/RoboFontExtensions</string>
+	<key>extensionPath</key>
+	<string>send2twitter/send2twitter.roboFontExt</string>
 </dict>
 </plist>

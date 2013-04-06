@@ -20,5 +20,9 @@
 	<real>1308857490.9901929</real>
 	<key>version</key>
 	<string>1.0</string>
+	<key>repository</key>
+	<string>typemytype/RoboFontExtensions</string>
+	<key>extensionPath</key>
+	<string>shapeTool/ShapeTool.roboFontExt</string>
 </dict>
 </plist>

@@ -29,5 +29,9 @@
 	<real>1320533587.198683</real>
 	<key>version</key>
 	<string>1.0</string>
+	<key>repository</key>
+	<string>typemytype/RoboFontExtensions</string>
+	<key>extensionPath</key>
+	<string>glifViewer/GlifViewer.roboFontExt</string>
 </dict>
 </plist>
