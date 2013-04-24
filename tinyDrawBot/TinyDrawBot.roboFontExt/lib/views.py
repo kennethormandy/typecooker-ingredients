@@ -60,13 +60,9 @@ class DrawView(NSView):
         self._runRaw = False
         self._pdfImage = None
         self._startDrag = False
-        
-        self._namespaces = dict()
-        self._drawingTools = TinyDrawBotDrawingTools()
 
-        for name in self._drawingTools.__all__:
-            self._namespaces[name] = getattr(self._drawingTools, name)
-    
+        self._drawingTools = TinyDrawBotDrawingTools()
+            
     def getPath(self):
         window = self.window()
         if window is None:
@@ -108,7 +104,11 @@ class DrawView(NSView):
         self.stdout = SimpleOutput(self.output)
         self.stderr = SimpleOutput(self.output, True)
         path = self.getPath()
-        ScriptRunner(text=self._code, path=path, stdout=self.stdout, stderr=self.stderr, namespace=self._namespaces)
+
+        namespace = dict()
+        for name in self._drawingTools.__all__:
+            namespaces[name] = getattr(self._drawingTools, name)
+        ScriptRunner(text=self._code, path=path, stdout=self.stdout, stderr=self.stderr, namespace=namespaces)
         
         _st = NSMutableAttributedString.alloc().init()
         for isErr, data in self.output:
