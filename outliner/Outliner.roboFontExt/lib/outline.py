@@ -17,7 +17,7 @@ from robofab.pens.pointPen import AbstractPointPen
 from robofab.pens.reverseContourPointPen import ReverseContourPointPen
 from robofab.pens.adapterPens import PointToSegmentPen
 
-from robofab.world import CurrentGlyph
+from robofab.world import CurrentGlyph, CurrentFont
 
 from defcon import Glyph
 from math import sqrt, cos, sin, acos, asin, degrees, radians, tan, pi
@@ -214,7 +214,7 @@ class OutlinePen(BasePen):
     pointClass = MathPoint
     magicCurve = 0.5522847498
     
-    def __init__(self, glyphSet, offset=10, connection="square", cap="round", miterLimit=None, closeOpenPaths=True):
+    def __init__(self, glyphSet, offset=10, connection="square", cap="round", miterLimit=None, closeOpenPaths=True, preserveComponents=False):
         BasePen.__init__(self, glyphSet)
         
         self.offset = abs(offset)
@@ -249,6 +249,9 @@ class OutlinePen(BasePen):
         self.prevAngle = None
                 
         self.shouldHandleMove = True
+
+        self.preserveComponents = preserveComponents
+        self.components = []
         
         self.drawSettings()
         
@@ -433,7 +436,13 @@ class OutlinePen(BasePen):
                 outerContour.addPoint((point.x, point.y), segmentType=point.segmentType, smooth=point.smooth)
 
             self.innerGlyph.removeContour(innerContour)
-        
+    
+    def addComponent(self, glyphName, transform):
+        if self.preserveComponents:
+            self.components.append((glyphName, transform))
+        else:
+            BasePen.addComponent(self, glyphName, transform)
+
     ## connections
     
     def buildConnection(self, close=False):
@@ -578,6 +587,9 @@ class OutlinePen(BasePen):
                 pointPen = ReverseContourPointPen(pointPen)
             self.originalGlyph.drawPoints(CleanPointPen(pointPen))
 
+        for glyphName, transform in self.components:
+            pointPen.addComponent(glyphName, transform)
+
     def draw(self, pen):
         pointPen = PointToSegmentPen(pen)
         self.drawPoints(pointPen)
@@ -696,6 +708,7 @@ class OutlinerPalette(BaseWindowController):
                                  callback=self.colorCallback)
         
         self.w.apply = Button((-100, -30, -10, 22), "Expand", self.expand)
+        self.w.applyAll = Button((-220, -30, -110, 22), "Expand Font", self.expandFont)
         self.setUpBaseWindowBehavior()
         
         addObserver(self, "drawOutline", "drawBackground")
@@ -720,7 +733,7 @@ class OutlinerPalette(BaseWindowController):
             pen.path.setLineWidth_(info["scale"])
             pen.path.stroke()
     
-    def calculate(self, glyph):
+    def calculate(self, glyph, preserveComponents=False):
         tickness = self.w.tickness.get()
         if self.w.connectmiterLimit.get():
             miterLimit = None
@@ -741,7 +754,8 @@ class OutlinerPalette(BaseWindowController):
                             connection=corner, 
                             cap=cap,
                             miterLimit=miterLimit,
-                            closeOpenPaths=closeOpenPaths)
+                            closeOpenPaths=closeOpenPaths,
+                            preserveComponents=preserveComponents)
         
         glyph.draw(pen)
         
@@ -821,7 +835,9 @@ class OutlinerPalette(BaseWindowController):
     
     def expand(self, sender):
         glyph = CurrentGlyph()
-        
+        self.expandGlyph(glyph)
+
+    def expandGlyph(self, glyph, preserveComponents=False):
         defconGlyph = glyph.naked()
         
         glyph.prepareUndo("Outline")
@@ -831,7 +847,7 @@ class OutlinerPalette(BaseWindowController):
         if isQuad:
             curveConverter.quadratic2bezier(defconGlyph)
         
-        outline = self.calculate(glyph)
+        outline = self.calculate(glyph, preserveComponents)
         
         glyph.clear()
         outline.drawPoints(glyph.getPointPen())
@@ -841,7 +857,11 @@ class OutlinerPalette(BaseWindowController):
         
         glyph.round()
         glyph.performUndo()
-        
+
+    def expandFont(self, sender):
+        font = CurrentFont()
+        for glyph in font:
+            self.expandGlyph(glyph, preserveComponents=True)
         
     
 OpenWindow(OutlinerPalette)
