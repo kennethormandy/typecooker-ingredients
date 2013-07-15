@@ -84,7 +84,8 @@ class FeatureTester(BaseWindowController):
             os.remove(path)
             
     def _fontChanged(self, notification):
-        self.glyphLineUpdateButton.enable(True)
+        self.w.setDefaultButton(self.glyphLineUpdateButton)
+        #self.glyphLineUpdateButton.enable(True)
         
     def glyphLineViewInputCallback(self, sender):
         self.updateGlyphLineView()
@@ -129,7 +130,9 @@ class FeatureTester(BaseWindowController):
         # stop the progress
         self.glyphLineProgressSpinner.stop()
         # color the update button
-        self.glyphLineUpdateButton.enable(False)
+        window = self.w.getNSWindow()
+        window.setDefaultButtonCell_(None)
+        #self.glyphLineUpdateButton.enable(False)
         # reposition the text field
         self.glyphLineInput.setPosSize(self.glyphLineInputPosSize)
     
