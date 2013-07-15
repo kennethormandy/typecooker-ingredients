@@ -50,9 +50,9 @@ class RamsaySts(object):
     def drawNeightbors(self, info):
         RamsayStData.fillColor.setFill()
         RamsayStData.strokeColor.setStroke()
-        self._drawNeightborsGlyphs(info["glyph"])
+        self._drawNeightborsGlyphs(info["glyph"], scale=info["scale"])
         
-    def _drawNeightborsGlyphs(self, glyph, stroke=True):
+    def _drawNeightborsGlyphs(self, glyph, stroke=True, scale=1):
         if glyph is None:
             return
         font = glyph.getParent()
@@ -70,6 +70,7 @@ class RamsaySts(object):
             ## fill the path
             path.fill()
             if stroke:
+                path.setLineWidth_(scale)
                 strokePixelPath(path)
             restore()
         
@@ -82,6 +83,7 @@ class RamsaySts(object):
             path = rightGlyph.naked().getRepresentation("defconAppKit.NSBezierPath")
             path.fill()
             if stroke:
+                path.setLineWidth_(scale)
                 strokePixelPath(path)
             restore()
         
