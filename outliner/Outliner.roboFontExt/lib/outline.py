@@ -171,7 +171,7 @@ class CleanPointPen(AbstractPointPen):
             if data["segmentType"] in ["line", "move"]:
                 prevPoint = contour[index-1]
                 if prevPoint["segmentType"] in ["line", "move"]:
-                    angle = MathPoint(data["point"]).angle(MathPoint(prevPoint["point"]), None)
+                    angle = MathPoint(data["point"]).angle(MathPoint(prevPoint["point"]))
                     if prevAngle is not None and angle is not None and roundFloat(prevAngle) == roundFloat(angle):
                         toRemove.append(prevPoint)
                     prevAngle = angle
