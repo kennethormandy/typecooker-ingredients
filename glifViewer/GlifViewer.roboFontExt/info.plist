@@ -30,11 +30,11 @@
 	<key>version</key>
 	<string>1.1</string>
 	<key>repository</key>
+	<string>typemytype/RoboFontExtensions</string>
 	<key>requiresVersionMajor</key>
 	<string>1</string>
 	<key>requiresVersionMinor</key>
 	<string>5</string>
-	<string>typemytype/RoboFontExtensions</string>
 	<key>extensionPath</key>
 	<string>glifViewer/GlifViewer.roboFontExt</string>
 </dict>
