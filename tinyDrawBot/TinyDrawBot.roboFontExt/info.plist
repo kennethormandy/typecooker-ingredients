@@ -28,11 +28,11 @@
 	<key>requiresVersionMajor</key>
 	<string>1</string>
 	<key>requiresVersionMinor</key>
-	<string>1</string>
+	<string>5</string>
 	<key>timeStamp</key>
 	<real>1322823760.2236581</real>
 	<key>version</key>
-	<string>1.0</string>
+	<string>1.1</string>
 	<key>repository</key>
 	<string>typemytype/RoboFontExtensions</string>
 	<key>extensionPath</key>

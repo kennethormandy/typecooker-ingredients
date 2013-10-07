@@ -2,6 +2,8 @@ from AppKit import *
 from vanilla import *
 from defconAppKit.windows.baseWindow import BaseWindowController
 
+from lib.scripting.codeEditor import OutPutEditor
+
 from views import TinyDrawBotTextEditor, DrawView
 
 
@@ -40,7 +42,7 @@ class TinyDrawBot(BaseWindowController):
             pass
         
         self.editor = TinyDrawBotTextEditor((0, 0, -0, -0))
-        self.codeOutPut = TextEditor((0, 0, -0, -0))
+        self.codeOutPut = OutPutEditor((0, 0, -0, -0))
         self.editor.setOutputView_(self.codeOutPut)
         
         self.drawView = DrawView(self.codeOutPut)

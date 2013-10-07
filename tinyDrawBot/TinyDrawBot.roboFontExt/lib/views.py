@@ -1,7 +1,9 @@
 from AppKit import *
 import re
 
-from lib.scripting.PyDETextView import PyDETextView,OUTPUT_TEXT, ERROR_TEXT
+from lib.tools.defaults import getDefault
+
+from lib.scripting.PyDETextView import PyDETextView, Output
 from lib.scripting.scriptTools import ScriptRunner
 from lib.scripting.scriptingWindow import PyTextEditor
 
@@ -18,18 +20,6 @@ width_RE = re.compile(variableRE % "WIDTH", re.MULTILINE + re.DOTALL)
 size_RE = re.compile(r".*^size\s?\(\s?([0-9]+),\s?([0-9]+)\s?\)\s?$", 
                     re.MULTILINE + re.DOTALL)
 
-class SimpleOutput(object):
-    def __init__(self, dataList, isErr=False):
-        self.data = dataList
-        self.isErr = isErr
-        
-    def write(self, data):
-        if isinstance(data, str):
-            try:
-                data = unicode(data, "utf-8", "replace")
-            except UnicodeDecodeError:
-                data = "XXX " + repr(data)
-        self.data.append((self.isErr, data))
 
 
 class TinyDrawBotDrawingTools(DrawingTools):
@@ -100,23 +90,16 @@ class DrawView(NSView):
         if not self._code:    
             return
         self._drawingTools._reset()
-        self.output = []
-        self.stdout = SimpleOutput(self.output)
-        self.stderr = SimpleOutput(self.output, True)
+        if getDefault("PyDEClearOutput", True):
+            self._errorView.clear()
+        self.stdout = Output(self._errorView)
+        self.stderr = Output(self._errorView, True)
         path = self.getPath()
 
         namespace = dict()
         for name in self._drawingTools.__all__:
             namespaces[name] = getattr(self._drawingTools, name)
         ScriptRunner(text=self._code, path=path, stdout=self.stdout, stderr=self.stderr, namespace=namespaces)
-        
-        _st = NSMutableAttributedString.alloc().init()
-        for isErr, data in self.output:
-            attrs = OUTPUT_TEXT 
-            if isErr:
-                attrs = ERROR_TEXT
-            txt = NSAttributedString.alloc().initWithString_attributes_(data, attrs)
-            self._errorView.getNSTextView().textStorage().appendAttributedString_(txt)
         
         
     def createPDFdata(self):
