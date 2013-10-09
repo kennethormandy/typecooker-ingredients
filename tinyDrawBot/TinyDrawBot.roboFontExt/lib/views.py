@@ -98,8 +98,8 @@ class DrawView(NSView):
 
         namespace = dict()
         for name in self._drawingTools.__all__:
-            namespaces[name] = getattr(self._drawingTools, name)
-        ScriptRunner(text=self._code, path=path, stdout=self.stdout, stderr=self.stderr, namespace=namespaces)
+            namespace[name] = getattr(self._drawingTools, name)
+        ScriptRunner(text=self._code, path=path, stdout=self.stdout, stderr=self.stderr, namespace=namespace)
         
         
     def createPDFdata(self):
