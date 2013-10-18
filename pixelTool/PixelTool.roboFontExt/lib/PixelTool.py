@@ -23,7 +23,9 @@ from generateImages import AddPixelToolRepresentationFactory
 AddPixelToolRepresentationFactory()
 
 pixelBundle = ExtensionBundle("PixelTool")
-pixelCursor = CreateCursor(pixelBundle.get("pixelCursor"), hotSpot=(9, 9))
+pixelCursor = CreateCursor(pixelBundle.get("pixelCursor"), hotSpot=(1, 19))
+pixelToolbarIcon = pixelBundle.get("pixelToolbarIcon")
+
 
 def _roundPoint(x, y):
     return int(round(x)), int(round(y))
@@ -243,7 +245,7 @@ class PixelTool(BaseEventTool):
         return pixelCursor
     
     def getToolbarIcon(self):
-        return pixelCursor.image()
+        return pixelToolbarIcon
     
     def getToolbarTip(self):
         return "Pixel Tool"
