@@ -3,6 +3,8 @@ from math import floor
 import vanilla
 import os
 
+from fontTools.misc.arrayTools import pointInRect
+
 from robofab.pens.reverseContourPointPen import ReverseContourPointPen
 
 from mojo.events import BaseEventTool, installTool
@@ -21,7 +23,9 @@ from generateImages import AddPixelToolRepresentationFactory
 AddPixelToolRepresentationFactory()
 
 pixelBundle = ExtensionBundle("PixelTool")
-pixelCursor = CreateCursor(pixelBundle.get("pixelCursor"), hotSpot=(9, 9))
+pixelCursor = CreateCursor(pixelBundle.get("pixelCursor"), hotSpot=(1, 19))
+pixelToolbarIcon = pixelBundle.get("pixelToolbarIcon")
+
 
 def _roundPoint(x, y):
     return int(round(x)), int(round(y))
@@ -164,10 +168,11 @@ class PixelTool(BaseEventTool):
         found = None
         if self.drawingMode == COMPONENT_MODE:
             size = self.size
-            halfSize = size * .5
             for component in glyph.components:
-                x, y = component.offset
-                if bezierTools.distanceFromPointToPoint((x+halfSize, y+halfSize), point) < size:
+                if component.baseGlyph != self.componentName:
+                    continue
+                rect = component.box
+                if pointInRect(point, rect):
                     found = component
                     break
         else:
@@ -237,7 +242,7 @@ class PixelTool(BaseEventTool):
         return pixelCursor
     
     def getToolbarIcon(self):
-        return pixelCursor.image()
+        return pixelToolbarIcon
     
     def getToolbarTip(self):
         return "Pixel Tool"
