@@ -3,6 +3,8 @@ from math import floor
 import vanilla
 import os
 
+from fontTools.misc.arrayTools import pointInRect
+
 from robofab.pens.reverseContourPointPen import ReverseContourPointPen
 
 from mojo.events import BaseEventTool, installTool
@@ -164,10 +166,14 @@ class PixelTool(BaseEventTool):
         found = None
         if self.drawingMode == COMPONENT_MODE:
             size = self.size
-            halfSize = size * .5
             for component in glyph.components:
-                x, y = component.offset
-                if bezierTools.distanceFromPointToPoint((x+halfSize, y+halfSize), point) < size:
+                if component.baseGlyph != self.componentName:
+                    continue
+                minX, minY = component.offset
+                maxX = minX + size
+                maxY = minY + size
+                rect = (minX, minY, maxX, maxY)
+                if pointInRect(point, rect):
                     found = component
                     break
         else:
