@@ -171,10 +171,7 @@ class PixelTool(BaseEventTool):
             for component in glyph.components:
                 if component.baseGlyph != self.componentName:
                     continue
-                minX, minY = component.offset
-                maxX = minX + size
-                maxY = minY + size
-                rect = (minX, minY, maxX, maxY)
+                rect = component.box
                 if pointInRect(point, rect):
                     found = component
                     break
