@@ -21,6 +21,8 @@ class RamsaySts(object):
         addObserver(self, "mouseDown", "mouseDown")
     
     def mouseDown(self, info):
+        if not RamsayStData.showPreview:
+            return
         glyph = info["glyph"]
         event = info["event"]
         if event.clickCount() == 3:
@@ -43,11 +45,15 @@ class RamsaySts(object):
                     return
     
     def drawPreviewNeighBors(self, info):
+        if not RamsayStData.showPreview:
+            return
         fillColor = NSColor.blackColor()
         fillColor.set()
         self._drawNeightborsGlyphs(info["glyph"], stroke=False)
         
     def drawNeightbors(self, info):
+        if not RamsayStData.showPreview:
+            return
         RamsayStData.fillColor.setFill()
         RamsayStData.strokeColor.setStroke()
         self._drawNeightborsGlyphs(info["glyph"], scale=info["scale"])

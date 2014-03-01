@@ -37,18 +37,18 @@ class AddGlyphNameSheet(object):
         return self.w.glyphName.get()
 
 
-
-
 class RamsayStSettingsWindowController(object):
     
     def __init__(self):
         self.w = vanilla.FloatingWindow((250, 300), "Ramsay St. Settings", minSize=(250, 250), maxSize=(400, 700))
-                
-        self.w.fillColorText = vanilla.TextBox((10, 10, 110, 22), "Fill Color:")
-        self.w.fillColor = vanilla.ColorWell((10, 30, 110, 40), color=RamsayStData.fillColor, callback=self.fillColorCallback)
         
-        self.w.strokeColorText = vanilla.TextBox((130, 10, -10, 22), "Stroke Color:")
-        self.w.strokeColor = vanilla.ColorWell((130, 30, -10, 40), color=RamsayStData.strokeColor, callback=self.strokeColorCallback)
+        self.w.showPreview = vanilla.CheckBox((10, 10, -10, 22), "Show Preview", value=RamsayStData.showPreview, callback=self.showPreviewCallback)
+
+        self.w.fillColorText = vanilla.TextBox((10, 40, 110, 22), "Fill Color:")
+        self.w.fillColor = vanilla.ColorWell((10, 60, 110, 40), color=RamsayStData.fillColor, callback=self.fillColorCallback)
+        
+        self.w.strokeColorText = vanilla.TextBox((130, 40, -10, 22), "Stroke Color:")
+        self.w.strokeColor = vanilla.ColorWell((130, 60, -10, 40), color=RamsayStData.strokeColor, callback=self.strokeColorCallback)
         
         items = RamsayStData.getItems()
         columnDescriptions = [
@@ -57,7 +57,7 @@ class RamsayStSettingsWindowController(object):
                               dict(title="Right", key="right"),
                               ]
         
-        self.w.dataList = vanilla.List((10, 80, -10, -40), items, columnDescriptions=columnDescriptions, editCallback=self.dataListEditCallback)
+        self.w.dataList = vanilla.List((10, 110, -10, -40), items, columnDescriptions=columnDescriptions, editCallback=self.dataListEditCallback)
         
         
         segmentDescriptions = [dict(title="+"), dict(title="-")]    
@@ -74,6 +74,11 @@ class RamsayStSettingsWindowController(object):
         
         self.w.open()
     
+    def showPreviewCallback(self, sender):
+        RamsayStData.showPreview = sender.get()
+        RamsayStData.save()
+        self.updateView()
+
     def fillColorCallback(self, sender):
         RamsayStData.fillColor = sender.get()
         RamsayStData.save()
