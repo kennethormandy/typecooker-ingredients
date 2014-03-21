@@ -21,7 +21,7 @@
 	<key>version</key>
 	<string>1.01</string>
 	<key>repository</key>
-	<string>ninastoessinger/RoboFontExtensions</string>
+	<string>typemytype/RoboFontExtensions</string>
 	<key>extensionPath</key>
 	<string>shapeTool/ShapeTool.roboFontExt</string>
 </dict>
