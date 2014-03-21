@@ -160,19 +160,19 @@ class DrawGeometricShapesTool(BaseEventTool):
                 r = .42
             
             pen.beginPath()
-            pen.addPoint(_roundPoint(x + hw, y), segmentType)
+            pen.addPoint(_roundPoint(x + hw, y), segmentType, True)
             pen.addPoint(_roundPoint(x + hw + hw*r, y))
             pen.addPoint(_roundPoint(x + w, y + hh - hh*r))
 
-            pen.addPoint(_roundPoint(x + w, y + hh), segmentType)
+            pen.addPoint(_roundPoint(x + w, y + hh), segmentType, True)
             pen.addPoint(_roundPoint(x + w, y + hh + hh*r))
             pen.addPoint(_roundPoint(x + hw + hw*r, y + h))
 
-            pen.addPoint(_roundPoint(x + hw, y + h), segmentType)
+            pen.addPoint(_roundPoint(x + hw, y + h), segmentType, True)
             pen.addPoint(_roundPoint(x + hw - hw*r, y + h))
             pen.addPoint(_roundPoint(x, y + hh + hh*r))
 
-            pen.addPoint(_roundPoint(x, y + hh), segmentType)
+            pen.addPoint(_roundPoint(x, y + hh), segmentType, True)
             pen.addPoint(_roundPoint(x, y + hh - hh*r))
             pen.addPoint(_roundPoint(x + hw - hw*r, y))
 
