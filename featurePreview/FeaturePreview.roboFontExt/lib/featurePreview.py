@@ -214,4 +214,5 @@ class FeatureTester(BaseWindowController):
                     self.featureFont.gpos.setFeatureState(tag, state)
         self.glyphLineControls.setFont(self.featureFont)
 
-FeatureTester(font=CurrentFont())
+if __name__ is "__main__":
+    FeatureTester(font=CurrentFont())
