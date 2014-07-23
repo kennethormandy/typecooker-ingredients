@@ -623,7 +623,7 @@ class OutlinerPalette(BaseWindowController):
 
     def __init__(self):
 
-        self.w = FloatingWindow((300, 430), "Outline Palette")
+        self.w = FloatingWindow((300, 450), "Outline Palette")
 
         y = 5
         middle = 135
@@ -756,10 +756,13 @@ class OutlinerPalette(BaseWindowController):
 
         self.previewCallback(self.w.preview)
 
-        self.w.apply = Button((-70, -30, -10, 22), "Expand", self.expand, sizeStyle="small")
-        self.w.applyNewFont = Button((-190, -30, -80, 22), "Expand Selection", self.expandSelection, sizeStyle="small")
-        self.w.applySelection = Button((-290, -30, -200, 22), "Expand Font", self.expandFont, sizeStyle="small")
-
+        self.w.apply = Button((-70, -55, -10, 22), "Expand", self.expand, sizeStyle="small")
+        self.w.applyNewFont = Button((-190, -55, -80, 22), "Expand Selection", self.expandSelection, sizeStyle="small")
+        self.w.applySelection = Button((-290, -55, -200, 22), "Expand Font", self.expandFont, sizeStyle="small")
+        
+        self.w.preserveComponents = CheckBox((10, -25, -10, 22), "Preserve Components", sizeStyle="small",
+                                value=getExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "preserveComponents"), False),
+                                callback=self.parametersTextChanged)
         self.setUpBaseWindowBehavior()
 
         addObserver(self, "drawOutline", "drawBackground")
@@ -864,7 +867,9 @@ class OutlinerPalette(BaseWindowController):
         setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "contrast"), contrast)
         contrastAngle = int(self.w.contrastAngle.get())
         setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "contrastAngle"), contrastAngle)
-
+        preserveComponents = bool(self.w.preserveComponents.get())
+        setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "preserveComponents"), preserveComponents)
+        
         miterLimit = int(self.w.miterLimit.get())
         if self.w.connectmiterLimit.get():
             miterLimit = tickness
@@ -917,11 +922,12 @@ class OutlinerPalette(BaseWindowController):
 
     def expand(self, sender):
         glyph = CurrentGlyph()
-        self.expandGlyph(glyph)
+        preserveComponents = bool(self.w.preserveComponents.get())
+        self.expandGlyph(glyph, preserveComponents)
         self.w.preview.set(False)
         self.previewCallback(self.w.preview)
 
-    def expandGlyph(self, glyph, preserveComponents=False):
+    def expandGlyph(self, glyph, preserveComponents=True):
         defconGlyph = glyph.naked()
 
         glyph.prepareUndo("Outline")
@@ -944,15 +950,17 @@ class OutlinerPalette(BaseWindowController):
 
     def expandSelection(self, sender):
         font = CurrentFont()
+        preserveComponents = bool(self.w.preserveComponents.get())
         selection = font.selection
         for glyphName in selection:
             glyph = font[glyphName]
-            self.expandGlyph(glyph, preserveComponents=True)
+            self.expandGlyph(glyph, preserveComponents)
 
     def expandFont(self, sender):
         font = CurrentFont()
+        preserveComponents = bool(self.w.preserveComponents.get())
         for glyph in font:
-            self.expandGlyph(glyph, preserveComponents=True)
+            self.expandGlyph(glyph, preserveComponents)
 
 
 OpenWindow(OutlinerPalette)
