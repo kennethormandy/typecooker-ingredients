@@ -222,7 +222,7 @@ class DrawGeometricShapesTool(BaseEventTool):
         if self.commandDown:
             self.origin = "center"
         ## record the current size of the shape and store it
-        if self.controlDown and self.moveShapeShift is None:
+        if self.controlDown and self.moveShapeShift is None and self.minPoint and self.maxPoint:
             w = self.maxPoint.x - self.minPoint.x
             h = self.maxPoint.y - self.minPoint.y
             self.moveShapeShift = w, h
