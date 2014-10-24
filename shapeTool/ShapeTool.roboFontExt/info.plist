@@ -19,10 +19,14 @@
 	<key>timeStamp</key>
 	<real>1395371045</real>
 	<key>version</key>
-	<string>1.1</string>
+	<string>1.2</string>
 	<key>repository</key>
 	<string>typemytype/RoboFontExtensions</string>
 	<key>extensionPath</key>
 	<string>shapeTool/ShapeTool.roboFontExt</string>
+	<key>requiresVersionMajor</key>
+	<string>1</string>
+	<key>requiresVersionMinor</key>
+	<string>6</string>
 </dict>
 </plist>
