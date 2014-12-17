@@ -623,7 +623,7 @@ class OutlinerPalette(BaseWindowController):
 
     def __init__(self):
 
-        self.w = FloatingWindow((300, 450), "Outline Palette")
+        self.w = FloatingWindow((300, 480), "Outline Palette")
 
         y = 5
         middle = 135
@@ -719,10 +719,14 @@ class OutlinerPalette(BaseWindowController):
             self.w.cap.set(cornerAndCap.index(capValue))
 
         y += 33
-
+        
+        self.w.keepBounds = CheckBox((middle-3, y, middle, 22), "Keep Bounds", 
+                                   value=getExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "keepBounds"), False),
+                                   callback=self.parametersTextChanged)
+        y += 30
         self.w.addOriginal = CheckBox((middle-3, y, middle, 22), "Add Source",
-                                      value=getExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "addOriginal"), False),
-                                      callback=self.parametersTextChanged)
+                                   value=getExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "addOriginal"), False),
+                                   callback=self.parametersTextChanged)
         y += 30
         self.w.addInner = CheckBox((middle-3, y, middle, 22), "Add Left",
                                    value=getExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "addLeft"), True),
@@ -777,7 +781,7 @@ class OutlinerPalette(BaseWindowController):
     def drawOutline(self, info):
         if not self.w.preview.get():
             return
-        outline = self.calculate(glyph=info["glyph"])
+        outline = self.calculate(glyph=info["glyph"].naked())
         pen = CocoaPen(None)
         outline.draw(pen)
 
@@ -793,6 +797,7 @@ class OutlinerPalette(BaseWindowController):
         tickness = self.w.tickness.get()
         contrast = self.w.contrast.get()
         contrastAngle = self.w.contrastAngle.get()
+        keepBounds = self.w.keepBounds.get()
         if self.w.connectmiterLimit.get():
             miterLimit = None
         else:
@@ -822,7 +827,26 @@ class OutlinerPalette(BaseWindowController):
         pen.drawSettings(drawOriginal=drawOriginal,
                          drawInner=drawInner,
                          drawOuter=drawOuter)
-        return pen
+                         
+        result = pen.getGlyph()
+        if keepBounds:
+            if glyph.bounds and result.bounds:
+                minx1, miny1, maxx1, maxy1 = glyph.bounds
+                minx2, miny2, maxx2, maxy2 = result.bounds
+                
+                h1 = maxy1 - miny1
+                
+                w2 = maxx2 - minx2
+                h2 = maxy2 - miny2
+                
+                s = h1 / h2
+                
+                center = minx2 + w2 * .5, miny2 + h2 *.5
+                
+                dummy = RGlyph(result)
+                dummy.scale((s, s), center)
+            
+        return result
 
     def connectmiterLimit(self, sender):
         setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "connectmiterLimit"), sender.get())
@@ -867,6 +891,8 @@ class OutlinerPalette(BaseWindowController):
         setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "contrast"), contrast)
         contrastAngle = int(self.w.contrastAngle.get())
         setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "contrastAngle"), contrastAngle)
+        keepBounds = self.w.keepBounds.get()
+        setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "keepBounds"), keepBounds)
         preserveComponents = bool(self.w.preserveComponents.get())
         setExtensionDefault("%s.%s" %(outlinePaletteDefaultKey, "preserveComponents"), preserveComponents)
         
@@ -937,7 +963,7 @@ class OutlinerPalette(BaseWindowController):
         if isQuad:
             curveConverter.quadratic2bezier(defconGlyph)
 
-        outline = self.calculate(glyph, preserveComponents)
+        outline = self.calculate(defconGlyph, preserveComponents)
 
         glyph.clearContours()
         outline.drawPoints(glyph.getPointPen())
