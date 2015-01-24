@@ -1,8 +1,8 @@
 {
   "name": "typecooker-ingredients",
   "version": "0.1.0",
-  "description": "TypeCooker’s raw ingredients, via @TypeMyType’s RoboFont plugin.",
-  "homepage": "https://kennethormandy.com",
+  "description": "TypeCooker’s raw ingredients, via @TypeMyType’s RoboFont extension.",
+  "homepage": "https://typecooker.com",
   "author": "Kenneth Ormandy <hello@kennethormandy.com> (http://kennethormandy.com)",
   "license": "MIT",
   "repository": "git@github.com:kennethormandy/typecooker-ingredients.git",
