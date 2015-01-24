@@ -1,5 +1,5 @@
 .DS_Store*
-
 *.zip
-
 *.pyc
+node_modules
+*.log*
