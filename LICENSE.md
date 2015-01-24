@@ -1,7 +1,11 @@
+Copyright © 2004-2015, v.8, [TypeCooker](http://typecooker.com/) is a project by Erik van Blokland, [LettError.com](http://letterror.com/) [TypeMedia.org](http://typemedia.org/).
+
+***
+
 The MIT License (MIT)
 
-Copyright © 2004–2015 TypeMyType Comm. V.
 Copyright © 2015 Kenneth Ormandy
+Copyright © 2004–2015 [TypeMyType](http://www.typemytype.com/) Comm. V.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
